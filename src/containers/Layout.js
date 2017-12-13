@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from 'react-redux'
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Drawer from 'material-ui/Drawer';
@@ -10,17 +11,16 @@ import IconButton from 'material-ui/IconButton';
 import Hidden from 'material-ui/Hidden';
 import Divider from 'material-ui/Divider';
 import MenuIcon from 'material-ui-icons/Menu';
-import AccountCircle from 'material-ui-icons/AccountCircle';
-import Menu, { MenuItem } from 'material-ui/Menu';
-import { mailFolderListItems, otherMailFolderListItems } from './tileData';
+import { mailFolderListItems, otherMailFolderListItems } from '../components/tileData';
 
-const drawerWidth = 240;
+const drawerWidth = 250;
 
 const styles = theme => ({
   root: {
     width: '100%',
-    zIndex: 1,
-    overflow: 'hidden',
+    display: 'flex',
+    minHeight: '100vh',
+    alignItems: 'stretch'
   },
   appFrame: {
     position: 'relative',
@@ -29,10 +29,11 @@ const styles = theme => ({
     height: '100%',
   },
   appBar: {
-    // marginLeft: drawerWidth,
-    width: '100%',
-    left: 240,
-    marginLeft: 0,
+    position: 'fixed',
+    marginLeft: drawerWidth,
+    [theme.breakpoints.up('md')]: {
+      width: `calc(100% - ${drawerWidth}px)`,
+    },
   },
   navIconHide: {
     [theme.breakpoints.up('md')]: {
@@ -44,33 +45,28 @@ const styles = theme => ({
     width: 250,
     [theme.breakpoints.up('md')]: {
       width: drawerWidth,
+      position: 'fixed',
+      height: '100vh',
+      display: 'flex'
     },
   },
   content: {
     backgroundColor: theme.palette.background.default,
     width: '100%',
-    // padding: theme.spacing.unit * 3,
+    padding: theme.spacing.unit * 3,
     height: 'calc(100% - 56px)',
     marginTop: 56,
     [theme.breakpoints.up('sm')]: {
       height: 'calc(100% - 64px)',
       marginTop: 64,
+      marginLeft: drawerWidth
     },
-  },
-  flex: {
-    flex: 1,
-  },
-  menuButton: {
-    marginLeft: -12,
-    marginRight: 20,
   },
 });
 
-class ResponsiveDrawer extends React.Component {
+class Layout extends React.Component {
   state = {
     mobileOpen: false,
-    auth: true,
-    anchorEl: null,
   };
 
   handleDrawerToggle = () => {
@@ -79,8 +75,6 @@ class ResponsiveDrawer extends React.Component {
 
   render() {
     const { classes, theme } = this.props;
-    const { auth, anchorEl } = this.state;
-    const open = Boolean(anchorEl);
 
     const drawer = (
       <div>
@@ -98,48 +92,18 @@ class ResponsiveDrawer extends React.Component {
           <AppBar className={classes.appBar}>
             <Toolbar>
               <IconButton
-                className={classes.menuButton} color="contrast" aria-label="Menu"
+                color="contrast"
+                aria-label="open drawer"
                 onClick={this.handleDrawerToggle}
+                className={classes.navIconHide}
               >
                 <MenuIcon />
               </IconButton>
-
-              <Typography type="title" color="inherit" className={classes.flex}>
-                Title
-            </Typography>
-              {auth && (
-                <div>
-                  <IconButton
-                    aria-owns={open ? 'menu-appbar' : null}
-                    aria-haspopup="true"
-                    onClick={this.handleMenu}
-                    color="contrast"
-                  >
-                    <AccountCircle />
-                  </IconButton>
-                  <Menu
-                    id="menu-appbar"
-                    anchorEl={anchorEl}
-                    anchorOrigin={{
-                      vertical: 'top',
-                      horizontal: 'right',
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'right',
-                    }}
-                    open={open}
-                    onRequestClose={this.handleRequestClose}
-                  >
-                    <MenuItem onClick={this.handleRequestClose}>Profile</MenuItem>
-                    <MenuItem onClick={this.handleRequestClose}>My account</MenuItem>
-                  </Menu>
-                </div>
-              )}
+              <Typography type="title" color="inherit" noWrap>
+                Responsive drawer
+              </Typography>
             </Toolbar>
           </AppBar>
-
-
           <Hidden mdUp>
             <Drawer
               type="temporary"
@@ -158,8 +122,8 @@ class ResponsiveDrawer extends React.Component {
           </Hidden>
           <Hidden mdDown implementation="css">
             <Drawer
-              type="persistent"
-              open={!this.state.mobileOpen}
+              type="permanent"
+              open
               classes={{
                 paper: classes.drawerPaper,
               }}
@@ -168,18 +132,28 @@ class ResponsiveDrawer extends React.Component {
             </Drawer>
           </Hidden>
           <main className={classes.content}>
-            {this.props.children}
+            <Typography noWrap>{'You think water moves fast? You should see ice.'}</Typography>
           </main>
         </div>
       </div>
     );
   }
 }
-
-ResponsiveDrawer.propTypes = {
-  children: PropTypes.element.isRequired,
-  classes: PropTypes.object.isRequired,
-  theme: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles, { withTheme: true })(ResponsiveDrawer);
+  
+  Layout.propTypes = {
+    dispatch: PropTypes.func.isRequired,
+    classes: PropTypes.object.isRequired,
+    theme: PropTypes.object.isRequired,
+  }
+  
+  function mapStateToProps(state) {
+    return {}
+  }
+  
+  function mapDispatchToProps(dispatch) {
+    return {
+      dispatch
+    }
+  }
+  
+  export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(Layout))

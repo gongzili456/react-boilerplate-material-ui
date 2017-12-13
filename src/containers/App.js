@@ -10,6 +10,7 @@ import PropTypes from 'prop-types'
 
 import Reddit from './Reddit'
 import Home from './Home'
+import Layout from './Layout'
 
 class App extends Component {
   static propTypes = {
@@ -29,6 +30,7 @@ class App extends Component {
           <div style={{height: '100%'}}>
             <Route exact path='/' component={Reddit} />
             <Route exact path='/home' component={Home} />
+            <Route exact path='/layout' component={Layout} />
           </div>
         </ConnectedRouter>
       </Provider>
